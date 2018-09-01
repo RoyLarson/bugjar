@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+bugjar = {editable = true, path = "."}
+
+[dev-packages]
+pytest = "*"
+mypy = "*"
+"autopep8" = "*"
+"flake8" = "*"
+isort = "*"
+pytest-timeout = "*"
+
+[requires]
+python_version = "3.6"

@@ -1,0 +1,31 @@
+"""
+Traceback(most recent call last):
+  File "c:\users\roy\python~1\bugjar_fixes\bugjar\.venv\scripts\bugjar-net-script.py", line 11, in < module >
+    load_entry_point('bugjar', 'console_scripts', 'bugjar-net')()
+  File "c:\users\roy\python code\bugjar_fixes\bugjar\bugjar\main.py", line 161, in net
+    net_run(options.hostname, options.port, filename, *options.args)
+  File "c:\users\roy\python code\bugjar_fixes\bugjar\bugjar\net.py", line 609, in run
+    debugger.interaction(None, t)
+  File "c:\users\roy\python code\bugjar_fixes\bugjar\bugjar\net.py", line 231, in interaction
+    self.output_stack()
+  File "c:\users\roy\python code\bugjar_fixes\bugjar\bugjar\net.py", line 147, in output_stack
+    elif self.stack[3][0].f_code.co_filename == '<string>':
+IndexError: list index out of range
+Waiting for connection... [WinError 1006
+
+""""""
+Traceback(most recent call last):
+  File "c:\users\roy\python~1\bugjar_fixes\bugjar\.venv\scripts\bugjar-net-script.py", line 11, in < module >
+    load_entry_point('bugjar', 'console_scripts', 'bugjar-net')()
+  File "c:\users\roy\python code\bugjar_fixes\bugjar\bugjar\main.py", line 161, in net
+    net_run(options.hostname, options.port, filename, *options.args)
+  File "c:\users\roy\python code\bugjar_fixes\bugjar\bugjar\net.py", line 609, in run
+    debugger.interaction(None, t)
+  File "c:\users\roy\python code\bugjar_fixes\bugjar\bugjar\net.py", line 231, in interaction
+    self.output_stack()
+  File "c:\users\roy\python code\bugjar_fixes\bugjar\bugjar\net.py", line 147, in output_stack
+    elif self.stack[3][0].f_code.co_filename == '<string>':
+IndexError: list index out of range
+Waiting for connection... [WinError 1006
+
+"""

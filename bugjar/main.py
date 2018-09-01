@@ -7,6 +7,8 @@ import os
 import subprocess
 import sys
 import time
+import logging
+logging.basicConfig(level=logging.DEBUG, filename='main_debug.log')
 
 try:
     from Tkinter import Tk
@@ -66,6 +68,7 @@ def local():
     )
 
     options = parser.parse_args()
+    logging.debug(options.filename)
 
     # Start the program to be debugged
     proc = subprocess.Popen(
@@ -156,9 +159,27 @@ def net():
     # Convert the filename provided on the command line into a canonical form
     filename = os.path.abspath(options.filename)
     filename = os.path.normcase(filename)
-
+    logging.debug('Starting Filename {}'.format(filename))
+    if hasattr(sys, 'getwindowsversion'):
+        filename = insert_slashes(filename)
+    logging.debug('Converted Filename {}'.format(filename))
     # Run the debugger
     net_run(options.hostname, options.port, filename, *options.args)
+
+
+def insert_slashes(filename):
+    file_str = []
+    for i, char in enumerate(filename):
+        if char == '\\':
+            if filename[i+1] != '\\' and file_str[i-1] != '\\':
+                file_str.append('\\\\')
+            else:
+                file_str.append('\\')
+        else:
+            file_str.append(char)
+
+    return ''.join(file_str)
+
 
 if __name__ == '__main__':
     local()

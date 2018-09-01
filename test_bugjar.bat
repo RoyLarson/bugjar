@@ -1,0 +1,1 @@
+.\.venv\Scripts\bugjar.exe ".\tests\test_bugjar_init.py"

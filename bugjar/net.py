@@ -23,6 +23,8 @@ import socket
 import sys
 from threading import Thread
 import traceback
+import logging
+logging.basicConfig(level=logging.DEBUG, filename='debug.log')
 
 try:
     from Queue import Queue
@@ -142,10 +144,21 @@ class Debugger(bdb.Bdb):
         # If this is an exception, there are 2 extra frames
         # from the Bugjar net.
         # All these frames can be ignored.
-        if self.stack[1][0].f_code.co_filename == '<string>':
-            str_index = 2
-        elif self.stack[3][0].f_code.co_filename == '<string>':
-            str_index = 4
+        # TODO remove this code once it works in both here and  2.7
+        # if self.stack[1][0].f_code.co_filename == '<string>':
+        #   str_index = 2
+        # elif self.stack[3][0].f_code.co_filename == '<string>':
+        #   str_index = 4
+
+        str_index = 1
+        for ind, frame in enumerate(self.stack):
+            # looking_for = '<string>'  changed because it wasn't showing up on my system ever
+            # and I don't know what is special about '<string>'
+            looking_for = 'bugjar\\net.py'
+            if frame[0].f_code.co_filename[-len(looking_for):] == looking_for:
+                str_index = ind+1
+                # finds last instance looking for and moves 1 beyond it
+                #  what is special about '<string>'?
 
         stack_data = [
             (
@@ -199,7 +212,8 @@ class Debugger(bdb.Bdb):
             if (self.mainpyfile != self.canonic(frame.f_code.co_filename) or frame.f_lineno <= 0):
                 return
             self._run_state = Debugger.STARTED
-        self.output('line', filename=self.canonic(frame.f_code.co_filename), line=frame.f_lineno)
+        self.output('line', filename=self.canonic(
+            frame.f_code.co_filename), line=frame.f_lineno)
         self.interaction(frame, None)
 
     def user_return(self, frame, return_value):
@@ -246,14 +260,17 @@ class Debugger(bdb.Bdb):
                         raise
                     except Exception as e:
                         # print "Unknown problem with command %s: %s" % (command, e)
-                        self.output('error', message='Unknown problem with command %s: %s' % (command, e))
+                        self.output(
+                            'error', message='Unknown problem with command %s: %s' % (command, e))
                 else:
                     # print "Unknown command %s" % command
-                    self.output('error', message='Unknown command: %s' % command)
+                    self.output(
+                        'error', message='Unknown command: %s' % command)
 
             except (socket.error, AttributeError, ClientClose):
                 # Problem with connection; look for new client
-                print("Listening on %s:%s for a bugjar client" % (self.host, self.port))
+                print("Listening on %s:%s for a bugjar client" %
+                      (self.host, self.port))
                 client, addr = self.socket.accept()
 
                 print("Got connection from", client.getpeername())
@@ -261,7 +278,8 @@ class Debugger(bdb.Bdb):
 
                 # Start the command queue
                 self.commands = Queue()
-                self.command_thread = Thread(target=command_buffer, args=(self,))
+                self.command_thread = Thread(
+                    target=command_buffer, args=(self,))
                 self.command_thread.daemon = True
                 self.command_thread.start()
 
@@ -307,7 +325,8 @@ class Debugger(bdb.Bdb):
                     funcname=bp.funcname
                 )
         else:
-            self.output('error', message="%s:%s is not executable" % (filename, line))
+            self.output('error', message="%s:%s is not executable" %
+                        (filename, line))
 
     def is_executable_line(self, filename, line):
         """Check whether specified line is executable.
@@ -545,15 +564,17 @@ class Debugger(bdb.Bdb):
             "__file__": filename,
             "__builtins__": __builtins__,
         })
+        
 
         # When bdb sets tracing, a number of call and line events happens
         # BEFORE debugger even reaches user's code (and the exact sequence of
         # events depends on python version). So we take special measures to
         # avoid stopping before we reach the main script (see user_line and
         # user_call for details).
+
         self._run_state = Debugger.STARTING
         self.mainpyfile = self.canonic(filename)
-        self._user_requested_quit = False
+        self._user_requested_quit = False             
         self.run('f = open("{filename}", "rb");'
                  'code = compile(f.read(), "{filename}", "exec");'
                  'exec(code);'
